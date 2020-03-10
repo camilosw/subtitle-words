@@ -34,7 +34,21 @@ module.exports = (env, argv) => {
         {
           test: /\.css$/,
           exclude: /node_modules/,
-          use: ['style-loader', 'css-loader'],
+          use: [
+            isDevelopment && 'style-loader',
+            isProduction && MiniCssExtractPlugin.loader,
+            {
+              loader: 'astroturf/css-loader',
+              options: {
+                modules: {
+                  mode: 'local',
+                  localIdentName: isDevelopment
+                    ? '[name]__[local]__[hash:base64]'
+                    : '[hash:base64]',
+                },
+              },
+            },
+          ].filter(Boolean),
         },
       ],
     },
