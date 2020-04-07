@@ -1,11 +1,20 @@
 import React, { useReducer } from 'react';
 import { subTitleType } from 'subtitle';
 import preprocessor from 'text-preprocessor';
+import { useDispatch } from 'react-redux';
 import AddSubtitles from 'components/AddSubtitles';
+import { addWords } from 'store/wordsSlice';
+
 import { css } from 'astroturf';
+import { useHistory } from 'react-router';
 
 const cn = css`
   .listContainer {
+  }
+  .actions {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
   }
   .marked {
     background-color: #ddd;
@@ -62,7 +71,23 @@ const getMarked = (words: Map<string, boolean>) => {
 };
 
 const AddSubtitlesRoute = () => {
+  const history = useHistory();
   const [state, dispatch] = useReducer(reducer, new Map<string, boolean>());
+  const globalDispatch = useDispatch();
+  // const { knownWords } = useSelector(
+  //   (globalState: RootState) => globalState.wordsSlice,
+  // );
+
+  const handleFinish = () => {
+    const newWords = [...state]
+      .filter(([, marked]) => marked)
+      .map(([word]) => word);
+    const knownWords = [...state]
+      .filter(([, marked]) => !marked)
+      .map(([word]) => word);
+    globalDispatch(addWords({ newWords, knownWords }));
+    history.push('/');
+  };
 
   return (
     <div>
@@ -72,8 +97,9 @@ const AddSubtitlesRoute = () => {
         />
       ) : (
         <div className={cn.listContainer}>
-          <div>
+          <div className={cn.actions}>
             {getMarked(state)} / {state.size - getMarked(state)}
+            <button onClick={handleFinish}>Finish</button>
           </div>
           {[...state].map(([word, marked]) => (
             <div
@@ -84,7 +110,6 @@ const AddSubtitlesRoute = () => {
               {word}
             </div>
           ))}
-          <div>Actions</div>
         </div>
       )}
     </div>

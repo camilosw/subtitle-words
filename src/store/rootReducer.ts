@@ -1,0 +1,10 @@
+import { combineReducers } from '@reduxjs/toolkit';
+import wordsSliceReducer from 'store/wordsSlice';
+
+const rootReducer = combineReducers({
+  wordsSlice: wordsSliceReducer,
+});
+
+export type RootState = ReturnType<typeof rootReducer>;
+
+export default rootReducer;
