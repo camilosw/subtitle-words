@@ -1,13 +1,24 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const dotenv = require('dotenv');
 
 module.exports = (env, argv) => {
   const isDevelopment = argv.mode === 'development';
   const isProduction = argv.mode === 'production';
+
+  const envFile = dotenv.config().parsed;
+  const envs = {
+    'process.env': Object.keys(envFile).reduce((accum, item) => {
+      // eslint-disable-next-line no-param-reassign
+      accum[item] = JSON.stringify(envFile[item]);
+      return accum;
+    }, {}),
+  };
 
   return {
     devtool: isDevelopment ? 'cheap-module-eval-source-map' : 'source-map',
@@ -53,6 +64,7 @@ module.exports = (env, argv) => {
       ],
     },
     plugins: [
+      new webpack.DefinePlugin(envs),
       isProduction && new CleanWebpackPlugin(),
       new HtmlWebpackPlugin({
         template: 'public/index.html',
