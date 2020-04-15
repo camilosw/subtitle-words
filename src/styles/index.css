@@ -1,13 +1,88 @@
+@import './normalize.css';
+@import url('https://fonts.googleapis.com/css?family=Archivo:300,400,700&display=swap');
+
+:root {
+  --red-050: #ffeeee;
+  --red-100: #facdcd;
+  --red-200: #f29b9b;
+  --red-300: #e66a6a;
+  --red-400: #d64545;
+  --red-500: #ba2525;
+  --red-600: #a61b1b;
+  --red-700: #911111;
+  --red-800: #780a0a;
+  --red-900: #610404;
+
+  --yellow-vivid-050: #fffbea;
+  --yellow-vivid-100: #fff3c4;
+  --yellow-vivid-200: #fce588;
+  --yellow-vivid-300: #fadb5f;
+  --yellow-vivid-400: #f7c948;
+  --yellow-vivid-500: #f0b429;
+  --yellow-vivid-600: #de911d;
+  --yellow-vivid-700: #cb6e17;
+  --yellow-vivid-800: #b44d12;
+  --yellow-vivid-900: #8d2b0b;
+
+  --grey-050: #faf9f7;
+  --grey-100: #e8e6e1;
+  --grey-200: #d3cec4;
+  --grey-300: #b8b2a7;
+  --grey-400: #a39e93;
+  --grey-500: #857f72;
+  --grey-600: #625d52;
+  --grey-700: #504a40;
+  --grey-800: #423d33;
+  --grey-900: #27241d;
+
+  --cyan-050: #e0fcff;
+  --cyan-100: #bef8fd;
+  --cyan-200: #87eaf2;
+  --cyan-300: #54d1db;
+  --cyan-400: #38bec9;
+  --cyan-500: #2cb1bc;
+  --cyan-600: #14919b;
+  --cyan-700: #0e7c86;
+  --cyan-800: #0a6c74;
+  --cyan-900: #044e54;
+
+  --lime-green-050: #f2fde0;
+  --lime-green-100: #e2f7c2;
+  --lime-green-200: #c7ea8f;
+  --lime-green-300: #abdb5e;
+  --lime-green-400: #94c843;
+  --lime-green-500: #7bb026;
+  --lime-green-600: #63921a;
+  --lime-green-700: #507712;
+  --lime-green-800: #42600c;
+  --lime-green-900: #2b4005;
+
+  --grey-light: var(--grey-050);
+  --grey: var(--grey-500);
+  --primary: var(--red-500);
+  --secondary: var(--yellow-vivid-500);
+  --secondary-light: var(--yellow-vivid-200);
+  --secondary-light-hover: var(--yellow-vivid-300);
+  --secondary-dark: var(--yellow-vivid-900);
+}
 *,
 *:before,
 *:after {
   box-sizing: border-box;
 }
 body {
+  background-color: var(--grey-light);
   font-family: Arial, Helvetica, sans-serif;
 }
 h1 {
   text-align: center;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
 }
 .content {
   display: flex;

@@ -4,22 +4,23 @@ import 'styles/normalize.css';
 import 'styles/index.css';
 import Routes from 'Routes';
 import { BrowserRouter } from 'react-router-dom';
-import Container from 'components/Container';
 import { Provider } from 'react-redux';
 import store from 'store/store';
-import { AuthProvider, AuthButton } from 'modules/firebase';
+import { AuthProvider } from 'modules/firebase';
+import Header from 'components/Layout/Header';
+import Main from 'components/Layout/Main';
 
 const App = () => (
-  <AuthProvider>
-    <Provider store={store}>
-      <BrowserRouter>
-        <Container>
-          <AuthButton />
+  <BrowserRouter>
+    <AuthProvider>
+      <Provider store={store}>
+        <Header />
+        <Main>
           <Routes />
-        </Container>
-      </BrowserRouter>
-    </Provider>
-  </AuthProvider>
+        </Main>
+      </Provider>
+    </AuthProvider>
+  </BrowserRouter>
 );
 
 ReactDOM.render(<App />, document.getElementById('root'));

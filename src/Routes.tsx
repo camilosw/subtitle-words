@@ -1,18 +1,25 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
-import HomeRoute from 'pages/HomeRoute';
-import AddSubtitlesRoute from './pages/AddSubtitlesRoute';
+import { Route, Redirect } from 'react-router-dom';
+import SignIn from 'routes/SignIn';
+import { useUser } from 'modules/firebase/AuthProvider';
+import MainRoute from 'routes/MainRoute';
 
 const Routes = () => {
-  return (
-    <Switch>
-      <Route path="/" exact>
-        <HomeRoute />
+  const user = useUser();
+
+  if (user === undefined) {
+    return <div>Loading...</div>;
+  }
+
+  return user ? (
+    <MainRoute />
+  ) : (
+    <>
+      <Route path="/sign-in">
+        <SignIn />
       </Route>
-      <Route path="/add-subtitles">
-        <AddSubtitlesRoute />
-      </Route>
-    </Switch>
+      <Redirect from="/" to="/sign-in" />
+    </>
   );
 };
 

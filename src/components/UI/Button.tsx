@@ -3,38 +3,28 @@ import { css } from 'astroturf';
 
 const cn = css`
   .button {
-    background-color: var(--blue);
-    text-decoration: none;
-    padding: 0.5rem 1.5rem;
-    border-radius: 0.5rem;
+    background-color: var(--secondary-light);
+    color: var(--secondary-dark);
+    padding: 0.375rem 1.25rem;
+    border-width: 0;
+    border-radius: 1rem;
+    font-weight: bold;
     display: inline-block;
     outline: none;
-  }
-  .blue {
-    background-color: var(--blue);
-  }
-  .gray {
-    background-color: var(--gray);
-    color: var(--dark-gray);
+    cursor: pointer;
+    &:hover {
+      background-color: var(--secondary-light-hover);
+    }
   }
 `;
 
 type Props = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
-> & {
-  variant?: 'gray' | 'blue';
-};
+>;
 
-const Button = ({ className, variant, ...rest }: Props) => {
-  const variantClass = cn[variant || 'blue'];
-
-  return (
-    <button
-      {...rest}
-      className={[className, cn.button, variantClass].join(' ')}
-    />
-  );
+const Button = ({ className, ...rest }: Props) => {
+  return <button {...rest} className={[className, cn.button].join(' ')} />;
 };
 
 export default Button;

@@ -1,5 +1,4 @@
-import { analytics, auth } from './firebase';
+import { analytics, auth, uiConfig } from './firebase';
 import AuthProvider from './AuthProvider';
-import AuthButton from './AuthButton';
 
-export { analytics, auth, AuthProvider, AuthButton };
+export { analytics, auth, uiConfig, AuthProvider };

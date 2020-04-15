@@ -7,17 +7,27 @@ import { addWords } from 'store/wordsSlice';
 
 import { css } from 'astroturf';
 import { useHistory } from 'react-router';
+import Word from 'components/Word';
+import Button from 'components/UI/Button';
 
 const cn = css`
   .listContainer {
   }
   .actions {
     position: sticky;
-    top: 0;
+    top: 51px;
+    display: flex;
+    justify-content: space-between;
     background-color: #fff;
+    margin: 0 -1rem;
+    padding: 1rem;
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
   }
   .marked {
-    background-color: #ddd;
+    background-color: var(--secondary-light);
+    &:hover {
+      background-color: var(--secondary-light-hover);
+    }
   }
 `;
 
@@ -98,17 +108,20 @@ const AddSubtitlesRoute = () => {
       ) : (
         <div className={cn.listContainer}>
           <div className={cn.actions}>
-            {getMarked(state)} / {state.size - getMarked(state)}
-            <button onClick={handleFinish}>Finish</button>
+            <div>
+              New words: {getMarked(state)} / {state.size}
+            </div>
+            <div>
+              <Button onClick={handleFinish}>Finish</Button>
+            </div>
           </div>
           {[...state].map(([word, marked]) => (
-            <div
+            <Word
               key={word}
-              className={marked ? cn.marked : ''}
               onClick={() => dispatch({ type: 'TOGGLE_WORD', word })}
-            >
-              {word}
-            </div>
+              className={marked ? cn.marked : ''}
+              word={word}
+            />
           ))}
         </div>
       )}
