@@ -5,7 +5,7 @@ import 'styles/index.css';
 import Routes from 'Routes';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import store from 'store/store';
+import { store } from 'store';
 import { AuthProvider } from 'modules/firebase';
 import Header from 'components/Layout/Header';
 import Main from 'components/Layout/Main';

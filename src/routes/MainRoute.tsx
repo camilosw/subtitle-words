@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Switch, Route, Redirect } from 'react-router';
 import { css } from 'astroturf';
+import { useGetWords } from 'modules/api';
+import { useDispatch } from 'react-redux';
+import { useUser } from 'modules/firebase';
+import { addWords } from 'store';
 import Sidebar from './Sidebar';
 import AddSubtitlesRoute from './AddSubtitlesRoute';
 import WordsRoute from './WordsRoute';
@@ -31,6 +35,24 @@ const cn = css`
 `;
 
 const MainRoute = () => {
+  const [getWords, { data, loading }] = useGetWords();
+  const dispatch = useDispatch();
+  const user = useUser();
+
+  useEffect(() => {
+    if (user) {
+      getWords(user.uid);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (data) {
+      dispatch(addWords(data));
+    }
+  }, [data]);
+
+  if (loading) return <div>Loading...</div>;
+
   return (
     <div className={cn.main}>
       <aside className={cn.sidebar}>

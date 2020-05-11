@@ -1,14 +1,16 @@
 import React, { useReducer } from 'react';
 import { subTitleType } from 'subtitle';
 import preprocessor from 'text-preprocessor';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AddSubtitles from 'components/AddSubtitles';
-import { addWords } from 'store/wordsSlice';
+import { addWords, RootState } from 'store';
 
 import { css } from 'astroturf';
 import { useHistory } from 'react-router';
 import Word from 'components/Word';
 import Button from 'components/UI/Button';
+import { useUser } from 'modules/firebase';
+import { useAddWords } from 'modules/api';
 
 const cn = css`
   .listContainer {
@@ -33,7 +35,7 @@ const cn = css`
 
 interface ActionPopulate {
   type: 'POPULATE';
-  subtitles: subTitleType[];
+  subtitles: [string, boolean][];
 }
 
 interface ActionToggleWord {
@@ -55,15 +57,14 @@ const extractWords = (subtitles: subTitleType[]) => {
     .toString();
   const uniqueWords = [...new Set(cleanText.split(' '))]
     .filter(word => word.length > 1)
-    .sort()
-    .map(word => [word, false] as [string, boolean]);
-  return new Map(uniqueWords);
+    .sort();
+  return uniqueWords;
 };
 
 const reducer = (state: Map<string, boolean>, action: Action) => {
   switch (action.type) {
     case 'POPULATE':
-      return extractWords(action.subtitles);
+      return new Map(action.subtitles);
 
     case 'TOGGLE_WORD': {
       const marked = state.get(action.word);
@@ -84,27 +85,44 @@ const AddSubtitlesRoute = () => {
   const history = useHistory();
   const [state, dispatch] = useReducer(reducer, new Map<string, boolean>());
   const globalDispatch = useDispatch();
-  // const { knownWords } = useSelector(
-  //   (globalState: RootState) => globalState.wordsSlice,
-  // );
+  const user = useUser();
+  const [addWordsToDb] = useAddWords();
+  const storeWords = useSelector(
+    (globalState: RootState) => globalState.wordsSlice,
+  );
+  const savedWords = [...storeWords.new, ...storeWords.known];
 
-  const handleFinish = () => {
-    const newWords = [...state]
-      .filter(([, marked]) => marked)
-      .map(([word]) => word);
-    const knownWords = [...state]
-      .filter(([, marked]) => !marked)
-      .map(([word]) => word);
-    globalDispatch(addWords({ newWords, knownWords }));
-    history.push('/');
+  const handleFinish = async () => {
+    if (user) {
+      try {
+        const words = {
+          new: [...state].filter(([, marked]) => marked).map(([word]) => word),
+          known: [...state]
+            .filter(([, marked]) => !marked)
+            .map(([word]) => word),
+        };
+
+        await addWordsToDb(user.uid, words);
+        globalDispatch(addWords(words));
+        history.push('/');
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const handleAddSubtitles = (subtitles: subTitleType[]) => {
+    const subtitleWords = extractWords(subtitles);
+    const newWords = subtitleWords
+      .filter(word => !savedWords.includes(word))
+      .map(word => [word, false] as [string, boolean]);
+    dispatch({ type: 'POPULATE', subtitles: newWords });
   };
 
   return (
     <div>
       {state.size === 0 ? (
-        <AddSubtitles
-          onAdded={subtitles => dispatch({ type: 'POPULATE', subtitles })}
-        />
+        <AddSubtitles onAdded={handleAddSubtitles} />
       ) : (
         <div className={cn.listContainer}>
           <div className={cn.actions}>

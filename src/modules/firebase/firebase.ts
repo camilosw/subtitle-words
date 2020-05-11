@@ -1,6 +1,7 @@
 import * as firebase from 'firebase/app';
 import 'firebase/analytics';
 import 'firebase/auth';
+import 'firebase/firestore';
 
 firebase.initializeApp({
   apiKey: process.env.FIREBASE_API_KEY,
@@ -28,3 +29,5 @@ export const uiConfig = {
 
 export const analytics = firebase.analytics();
 export const auth = firebase.auth();
+export const db = firebase.firestore();
+export const { firestore } = firebase;

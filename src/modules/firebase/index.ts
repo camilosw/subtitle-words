@@ -1,4 +1,3 @@
-import { analytics, auth, uiConfig } from './firebase';
-import AuthProvider from './AuthProvider';
-
-export { analytics, auth, uiConfig, AuthProvider };
+export * from './firebase';
+export { default as AuthProvider } from './AuthProvider';
+export * from './AuthProvider';

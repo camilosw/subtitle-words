@@ -2,6 +2,8 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { css } from 'astroturf';
 import ButtonLink from 'components/UI/ButtonLink';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store';
 
 const cn = css`
   .addButtonContainer {
@@ -39,17 +41,21 @@ const cn = css`
 `;
 
 const Sidebar = () => {
+  const { new: newWords, known: knownWords } = useSelector(
+    (state: RootState) => state.wordsSlice,
+  );
+
   return (
     <div className={cn.sidebar}>
       <h2 className={cn.title}>Words</h2>
       <nav className={cn.nav}>
         <div>
           <NavLink to="/new">New</NavLink>
-          <span className={cn.badge}>1250</span>
+          <span className={cn.badge}>{newWords.size}</span>
         </div>
         <div>
           <NavLink to="/known">Known</NavLink>
-          <span className={cn.badge}>3890</span>
+          <span className={cn.badge}>{knownWords.size}</span>
         </div>
       </nav>
       <div className={cn.addButtonContainer}>

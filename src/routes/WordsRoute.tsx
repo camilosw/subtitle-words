@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from 'store/rootReducer';
+import { RootState } from 'store';
 import { css } from 'astroturf';
 import Word from 'components/Word';
 
@@ -11,52 +11,22 @@ const cn = css`
     opacity: 0.9;
   }
 `;
-const words = [
-  'another',
-  'test',
-  'consequuntur',
-  'omnis',
-  'possimus',
-  'reiciendis',
-  'quia',
-  'fugiat',
-  'est',
-  'dolor',
-  'cumque',
-  'dolores',
-  'at',
-  'quam',
-  'ad',
-  'veniam',
-  'labore',
-  'nulla',
-  'qui',
-  'rerum',
-  'voluptas',
-  'nobis',
-  'eos',
-  'eligendi',
-  'et',
-  'suscipit',
-  'vel',
-  'quisquam',
-  'vero',
-  'dolores',
-];
 
 interface Props {
   type: 'known' | 'unknown';
 }
 
 const WordsRoute = ({ type = 'unknown' }: Props) => {
-  const { newWords } = useSelector((state: RootState) => state.wordsSlice);
+  const { new: newWords, known: knownWords } = useSelector(
+    (state: RootState) => state.wordsSlice,
+  );
 
-  console.log(newWords);
+  const currentWords = type === 'known' ? knownWords : newWords;
 
   return (
     <div>
       <h1 className={cn.title}>{type === 'known' ? 'Known ' : 'New '}words</h1>
-      {words.map(word => (
+      {[...currentWords].map(word => (
         <Word
           key={word}
           word={word}

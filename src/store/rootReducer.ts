@@ -1,5 +1,5 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import wordsSliceReducer from 'store/wordsSlice';
+import wordsSliceReducer from './wordsSlice';
 
 const rootReducer = combineReducers({
   wordsSlice: wordsSliceReducer,

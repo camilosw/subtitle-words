@@ -2,18 +2,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface WordsPayload {
-  knownWords: string[];
-  newWords: string[];
+  known: string[];
+  new: string[];
 }
 
 interface WordsState {
-  knownWords: Set<string>;
-  newWords: Set<string>;
+  known: Set<string>;
+  new: Set<string>;
 }
 
 const initialState: WordsState = {
-  knownWords: new Set(),
-  newWords: new Set(),
+  known: new Set(),
+  new: new Set(),
 };
 
 const wordsSlice = createSlice({
@@ -21,19 +21,16 @@ const wordsSlice = createSlice({
   initialState,
   reducers: {
     addWords(state, action: PayloadAction<WordsPayload>) {
-      state.knownWords = new Set([
-        ...state.knownWords,
-        ...action.payload.knownWords,
-      ]);
-      state.newWords = new Set([...state.newWords, ...action.payload.newWords]);
+      state.known = new Set([...state.known, ...action.payload.known]);
+      state.new = new Set([...state.new, ...action.payload.new]);
     },
     toggleWord(state, action: PayloadAction<string>) {
-      if (state.knownWords.has(action.payload)) {
-        state.knownWords.delete(action.payload);
-        state.newWords.add(action.payload);
+      if (state.known.has(action.payload)) {
+        state.known.delete(action.payload);
+        state.new.add(action.payload);
       } else {
-        state.knownWords.add(action.payload);
-        state.newWords.delete(action.payload);
+        state.known.add(action.payload);
+        state.new.delete(action.payload);
       }
     },
   },
