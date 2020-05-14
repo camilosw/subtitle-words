@@ -1,16 +1,13 @@
 import React, { useReducer } from 'react';
 import { subTitleType } from 'subtitle';
 import preprocessor from 'text-preprocessor';
-import { useDispatch, useSelector } from 'react-redux';
-import AddSubtitles from 'components/AddSubtitles';
-import { addWords, RootState } from 'store';
-
-import { css } from 'astroturf';
 import { useHistory } from 'react-router';
+import { css } from 'astroturf';
+import { useUser } from 'modules/firebase';
+import AddSubtitles from 'components/AddSubtitles';
 import Word from 'components/Word';
 import Button from 'components/UI/Button';
-import { useUser } from 'modules/firebase';
-import { useAddWords } from 'modules/api';
+import { WordsState } from './MainRoute';
 
 const cn = css`
   .listContainer {
@@ -45,22 +42,6 @@ interface ActionToggleWord {
 
 type Action = ActionPopulate | ActionToggleWord;
 
-const extractWords = (subtitles: subTitleType[]) => {
-  const text = subtitles.map(subtitle => subtitle.text).join(' ');
-  const cleanText = preprocessor(text)
-    .unescape()
-    .killUnicode()
-    .normalizeSingleCurlyQuotes()
-    .toLowerCase()
-    .replace(/[^a-zA-Z'\s-]/g, ' ')
-    .replace(/(\n|\s'|'\s|\s-|-\s)/g, ' ')
-    .toString();
-  const uniqueWords = [...new Set(cleanText.split(' '))]
-    .filter(word => word.length > 1)
-    .sort();
-  return uniqueWords;
-};
-
 const reducer = (state: Map<string, boolean>, action: Action) => {
   switch (action.type) {
     case 'POPULATE':
@@ -77,33 +58,48 @@ const reducer = (state: Map<string, boolean>, action: Action) => {
   }
 };
 
+const extractWords = (subtitles: subTitleType[]) => {
+  const text = subtitles.map(subtitle => subtitle.text).join(' ');
+  const cleanText = preprocessor(text)
+    .unescape()
+    .killUnicode()
+    .normalizeSingleCurlyQuotes()
+    .toLowerCase()
+    .replace(/[^a-zA-Z'\s-]/g, ' ')
+    .replace(/(\n|\s'|'\s|\s-|-\s)/g, ' ')
+    .toString();
+  const uniqueWords = [...new Set(cleanText.split(' '))]
+    .filter(word => word.length > 1)
+    .sort();
+  return uniqueWords;
+};
+
 const getMarked = (words: Map<string, boolean>) => {
   return [...words].filter(word => word[1]).length;
 };
 
-const AddSubtitlesRoute = () => {
+interface Props {
+  words: WordsState;
+  addWords(newWords: string[], knownWords: string[]): Promise<void>;
+}
+
+const AddSubtitlesRoute = ({ words, addWords }: Props) => {
   const history = useHistory();
   const [state, dispatch] = useReducer(reducer, new Map<string, boolean>());
-  const globalDispatch = useDispatch();
   const user = useUser();
-  const [addWordsToDb] = useAddWords();
-  const storeWords = useSelector(
-    (globalState: RootState) => globalState.wordsSlice,
-  );
+  const storeWords = words;
   const savedWords = [...storeWords.new, ...storeWords.known];
 
   const handleFinish = async () => {
     if (user) {
       try {
-        const words = {
-          new: [...state].filter(([, marked]) => marked).map(([word]) => word),
-          known: [...state]
-            .filter(([, marked]) => !marked)
-            .map(([word]) => word),
-        };
-
-        await addWordsToDb(user.uid, words);
-        globalDispatch(addWords(words));
+        const newWords = [...state]
+          .filter(([, marked]) => marked)
+          .map(([word]) => word);
+        const knownWords = [...state]
+          .filter(([, marked]) => !marked)
+          .map(([word]) => word);
+        await addWords(newWords, knownWords);
         history.push('/');
       } catch (error) {
         console.log(error);

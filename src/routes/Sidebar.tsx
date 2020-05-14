@@ -2,8 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { css } from 'astroturf';
 import ButtonLink from 'components/UI/ButtonLink';
-import { useSelector } from 'react-redux';
-import { RootState } from 'store';
+import { WordsState } from './MainRoute';
 
 const cn = css`
   .addButtonContainer {
@@ -40,10 +39,12 @@ const cn = css`
   }
 `;
 
-const Sidebar = () => {
-  const { new: newWords, known: knownWords } = useSelector(
-    (state: RootState) => state.wordsSlice,
-  );
+interface Props {
+  words: WordsState;
+}
+
+const Sidebar = ({ words }: Props) => {
+  const { new: newWords, known: knownWords } = words;
 
   return (
     <div className={cn.sidebar}>

@@ -1,8 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from 'store';
 import { css } from 'astroturf';
 import Word from 'components/Word';
+import { WordsState } from './MainRoute';
 
 const cn = css`
   .title {
@@ -14,12 +13,12 @@ const cn = css`
 
 interface Props {
   type: 'known' | 'unknown';
+  words: WordsState;
+  toggleWord(word: string): void;
 }
 
-const WordsRoute = ({ type = 'unknown' }: Props) => {
-  const { new: newWords, known: knownWords } = useSelector(
-    (state: RootState) => state.wordsSlice,
-  );
+const WordsRoute = ({ type = 'unknown', words, toggleWord }: Props) => {
+  const { new: newWords, known: knownWords } = words;
 
   const currentWords = type === 'known' ? knownWords : newWords;
 
@@ -33,7 +32,11 @@ const WordsRoute = ({ type = 'unknown' }: Props) => {
           actions={
             <>
               <div>|</div>
-              {type === 'known' ? <div>set new</div> : <div>learned</div>}
+              {type === 'known' ? (
+                <div onClick={() => toggleWord(word)}>set new</div>
+              ) : (
+                <div onClick={() => toggleWord(word)}>learned</div>
+              )}
             </>
           }
         />
