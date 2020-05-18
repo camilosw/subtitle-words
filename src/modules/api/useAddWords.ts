@@ -14,16 +14,17 @@ const useAddWords = () => {
   const addWords = async (userId: string, words: Words) => {
     try {
       startLoading();
+      const setWords: any = {};
+      if (words.new.length) {
+        setWords.new = firestore.FieldValue.arrayUnion(...words.new);
+      }
+      if (words.known.length) {
+        setWords.known = firestore.FieldValue.arrayUnion(...words.known);
+      }
       const result = db
         .collection('words')
         .doc(userId)
-        .set(
-          {
-            new: firestore.FieldValue.arrayUnion(...words.new),
-            known: firestore.FieldValue.arrayUnion(...words.known),
-          },
-          { merge: true },
-        );
+        .set(setWords, { merge: true });
       setData(null);
       return result;
     } catch (error) {
