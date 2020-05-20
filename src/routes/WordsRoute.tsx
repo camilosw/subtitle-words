@@ -9,6 +9,12 @@ const cn = css`
     margin-top: 0.25rem;
     opacity: 0.9;
   }
+  .action {
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 interface Props {
@@ -33,9 +39,13 @@ const WordsRoute = ({ type = 'unknown', words, toggleWord }: Props) => {
             <>
               <div>|</div>
               {type === 'known' ? (
-                <div onClick={() => toggleWord(word)}>set new</div>
+                <div onClick={() => toggleWord(word)} className={cn.action}>
+                  set new
+                </div>
               ) : (
-                <div onClick={() => toggleWord(word)}>learned</div>
+                <div onClick={() => toggleWord(word)} className={cn.action}>
+                  learned
+                </div>
               )}
             </>
           }

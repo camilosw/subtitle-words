@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import { subTitleType } from 'subtitle';
 import preprocessor from 'text-preprocessor';
 import { useHistory } from 'react-router';
@@ -22,6 +22,9 @@ const cn = css`
     padding: 1rem;
     box-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
   }
+  .buttons > * {
+    margin-left: 0.5rem;
+  }
   .marked {
     background-color: var(--secondary-light);
     &:hover {
@@ -40,7 +43,11 @@ interface ActionToggleWord {
   word: string;
 }
 
-type Action = ActionPopulate | ActionToggleWord;
+interface ActionClean {
+  type: 'CLEAN';
+}
+
+type Action = ActionPopulate | ActionToggleWord | ActionClean;
 
 const reducer = (state: Map<string, boolean>, action: Action) => {
   switch (action.type) {
@@ -51,6 +58,10 @@ const reducer = (state: Map<string, boolean>, action: Action) => {
       const marked = state.get(action.word);
       state.set(action.word, !marked);
       return new Map([...state]);
+    }
+
+    case 'CLEAN': {
+      return new Map();
     }
 
     default:
@@ -87,8 +98,20 @@ const AddSubtitlesRoute = ({ words, addWords }: Props) => {
   const history = useHistory();
   const [state, dispatch] = useReducer(reducer, new Map<string, boolean>());
   const user = useUser();
-  const storeWords = words;
-  const savedWords = [...storeWords.new, ...storeWords.known];
+  const savedWords = [...words.new, ...words.known];
+
+  useEffect(() => {
+    const pendingWordsJSON = window.localStorage.getItem('words');
+    if (pendingWordsJSON) {
+      dispatch({ type: 'POPULATE', subtitles: JSON.parse(pendingWordsJSON) });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (state.size) {
+      window.localStorage.setItem('words', JSON.stringify([...state]));
+    }
+  }, [state]);
 
   const handleFinish = async () => {
     if (user) {
@@ -100,11 +123,17 @@ const AddSubtitlesRoute = ({ words, addWords }: Props) => {
           .filter(([, marked]) => !marked)
           .map(([word]) => word);
         await addWords(newWords, knownWords);
+        window.localStorage.removeItem('words');
         history.push('/');
       } catch (error) {
         console.log(error);
       }
     }
+  };
+
+  const handleClean = () => {
+    dispatch({ type: 'CLEAN' });
+    window.localStorage.removeItem('words');
   };
 
   const handleAddSubtitles = (subtitles: subTitleType[]) => {
@@ -113,6 +142,11 @@ const AddSubtitlesRoute = ({ words, addWords }: Props) => {
       .filter(word => !savedWords.includes(word))
       .map(word => [word, false] as [string, boolean]);
     dispatch({ type: 'POPULATE', subtitles: newWords });
+    window.localStorage.setItem('words', JSON.stringify(newWords));
+  };
+
+  const handleToggleWord = (word: string) => {
+    dispatch({ type: 'TOGGLE_WORD', word });
   };
 
   return (
@@ -125,14 +159,17 @@ const AddSubtitlesRoute = ({ words, addWords }: Props) => {
             <div>
               New words: {getMarked(state)} / {state.size}
             </div>
-            <div>
+            <div className={cn.buttons}>
+              <Button onClick={handleClean} variant="link">
+                Clean
+              </Button>
               <Button onClick={handleFinish}>Finish</Button>
             </div>
           </div>
           {[...state].map(([word, marked]) => (
             <Word
               key={word}
-              onClick={() => dispatch({ type: 'TOGGLE_WORD', word })}
+              onClick={() => handleToggleWord(word)}
               className={marked ? cn.marked : ''}
               word={word}
             />

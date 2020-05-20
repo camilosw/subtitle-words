@@ -16,15 +16,28 @@ const cn = css`
       background-color: var(--secondary-light-hover);
     }
   }
+  :global(.link) {
+    background-color: inherit;
+    color: inherit;
+    font-weight: 400;
+    &:hover {
+      text-decoration: underline;
+      background-color: inherit;
+    }
+  }
 `;
 
 type Props = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
->;
+> & {
+  variant?: '' | 'link';
+};
 
-const Button = ({ className, ...rest }: Props) => {
-  return <button {...rest} className={[className, cn.button].join(' ')} />;
+const Button = ({ className, variant = '', ...rest }: Props) => {
+  return (
+    <button {...rest} className={[className, cn.button, variant].join(' ')} />
+  );
 };
 
 export default Button;
