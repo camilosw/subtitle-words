@@ -77,7 +77,7 @@ const extractWords = (subtitles: subTitleType[]) => {
     .normalizeSingleCurlyQuotes()
     .toLowerCase()
     .replace(/[^a-zA-Z'\s-]/g, ' ')
-    .replace(/(\n|\s'|'\s|\s-|-\s)/g, ' ')
+    .replace(/(\n|\s'|'\s|\s-|-\s|^-)/gm, ' ')
     .toString();
   const uniqueWords = [...new Set(cleanText.split(' '))]
     .filter(word => word.length > 1)
