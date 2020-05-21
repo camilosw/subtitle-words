@@ -53,7 +53,7 @@ const Word = ({ word, className, actions, onClick }: Props) => {
       <div className={cn.actions}>
         <a
           href={`https://www.wordreference.com/es/translation.asp?tranword=${word.toLowerCase()}`}
-          target="_black"
+          target="_blank"
           rel="noopener noreferrer"
           className={cn.wordReference}
         >
