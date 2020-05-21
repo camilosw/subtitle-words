@@ -60,8 +60,8 @@ const reducer = (state: WordsState, action: Action) => {
   switch (action.type) {
     case 'POPULATE':
       return {
-        new: new Set(action.new),
-        known: new Set(action.known),
+        new: new Set(action.new.sort()),
+        known: new Set(action.known.sort()),
       };
 
     case 'ADD_WORDS':
